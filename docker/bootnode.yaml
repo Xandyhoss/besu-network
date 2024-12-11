@@ -1,0 +1,25 @@
+version: '2.1'
+
+services:
+  bootnode:
+    user: root
+    container_name: bootnode
+    image: hyperledger/besu:latest
+    volumes:
+      - ./../nodes/bootnode/data:/opt/besu/data
+      - ./../genesis:/opt/besu/genesis
+    entrypoint:
+      - /bin/bash
+      - -c
+      - besu --data-path=data --genesis-file=genesis/genesis.json --min-gas-price=0 --rpc-http-enabled --rpc-http-api=ETH,NET,QBFT --host-allowlist="*" --rpc-http-cors-origins="all"
+    ports:
+      - "30303:30303"
+      - "8545:8545"
+    networks:
+      besu_test_network:
+    restart: always
+
+networks:
+  besu_test_network:
+    driver: bridge
+    name: besu_test_network

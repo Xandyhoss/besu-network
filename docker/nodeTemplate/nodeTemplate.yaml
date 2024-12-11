@@ -1,0 +1,9 @@
+version: '2.1'
+
+services:
+  <NODES>
+
+networks:
+  besu_test_network:
+    driver: bridge
+    name: besu_test_network
