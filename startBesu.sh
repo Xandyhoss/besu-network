@@ -1,4 +1,4 @@
-NODES=1
+NODES=4
 BASE_P2P_PORT=30303
 BASE_RPC_PORT=8545
 
@@ -19,7 +19,8 @@ sudo rm -rf tmpFiles
 sudo rm -rf networkFiles
 sudo rm -rf genesis
 sudo rm -rf config/qbftConfigFile.json
-sudo rm -rf docker/nodes.yaml
+sudo rm -rf docker/nodes*.yaml
+sudo rm -f .env.network
 
 echo "Removing all containers..."
 docker stop $(docker ps -a -q)
@@ -134,6 +135,8 @@ generate_nodes_function() {
         ports:
         - \"${rpc_port}:${rpc_port}\"
         - \"${p2p_port}:${p2p_port}\"
+        - \"${rpc_port}:${rpc_port}/udp\"
+        - \"${p2p_port}:${p2p_port}/udp\"
         networks:
             besu_test_network:
         restart: always
@@ -163,6 +166,17 @@ if ((NODES>1)) ; then
     docker-compose -f docker/nodes.yaml up -d
     echo "Nodes started"
 fi
+
+echo "Creating network tracker file..."
+touch .env.network
+
+LAST_P2P_PORT=$((BASE_P2P_PORT + NODES-1))
+LAST_RPC_PORT=$((BASE_RPC_PORT + NODES-1))
+
+echo "NODES=$NODES" >> .env.network
+echo "ITERATION=1" >> .env.network
+echo "E_ADDRESS=$E_ADDRESS" >> .env.network
+
 
 echo "============================="
 echo "Network started successfully!"

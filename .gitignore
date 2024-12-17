@@ -1,4 +1,5 @@
 genesis
 nodes
-docker/nodes.yaml
+docker/nodes*.yaml
 config/qbftConfigFile.json
+.env.network
