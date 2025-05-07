@@ -153,12 +153,11 @@ for ((i=NODES; i<=(NEW_NODES + NODES - 1); i++)); do
     NEW_NODES=$((NEW_NODES - 1))
 done
 
-
 echo "Updating network tracker file..."
 echo "NODES=$((NODES + NEW_NODES))" > .env.network
 echo "ITERATION=$((ITERATION + 1))" >> .env.network
 echo "E_ADDRESS=${E_ADDRESS}" >> .env.network
 
-echo "======================================"
+echo "=================================================="
 echo "$ECHO_NODES validator node(s) added successfully!"
-echo "======================================"
+echo "=================================================="
