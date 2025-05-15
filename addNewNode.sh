@@ -60,12 +60,19 @@ OUTPUT_FILE="docker/nodes-${ITERATION}.yaml"
 
 echo "Generating nodes..."
 if [ -f "$TEMPLATE_FILE" ]; then
-    awk -v nodes="$NODES_PARAMS" '{gsub(/<NODES>/, nodes)}1' "$TEMPLATE_FILE" > "$OUTPUT_FILE"
-    echo "Docker-compose file generated: $OUTPUT_FILE"
-else
-    echo "Template file not found: $TEMPLATE_FILE"
-    exit 1
-fi
+        TMP_FILE=$(mktemp)
+
+        sed "/<NODES>/{
+            r /dev/stdin
+            d
+        }" "$TEMPLATE_FILE" > "$TMP_FILE" <<< "$NODES_PARAMS"
+
+        mv "$TMP_FILE" "$OUTPUT_FILE"
+        echo "Docker-compose file generated: $OUTPUT_FILE"
+    else
+        echo "Template file not found: $TEMPLATE_FILE"
+        exit 1
+    fi
 
 echo "Starting new nodes on docker"
 docker-compose -f $OUTPUT_FILE up -d

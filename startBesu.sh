@@ -150,10 +150,28 @@ NODES_PARAMS=$(generate_nodes_function)
 TEMPLATE_FILE="docker/nodeTemplate/nodeTemplate.yaml"
 OUTPUT_FILE="docker/nodes.yaml"
 
-if ((NODES>1)) ; then
+# if ((NODES>1)) ; then
+#     echo "Generating nodes..."
+#     if [ -f "$TEMPLATE_FILE" ]; then
+#         awk -v nodes="$NODES_PARAMS" '{gsub(/<NODES>/, nodes)}1' "$TEMPLATE_FILE" > "$OUTPUT_FILE"
+#         echo "Docker-compose file generated: $OUTPUT_FILE"
+#     else
+#         echo "Template file not found: $TEMPLATE_FILE"
+#         exit 1
+#     fi
+# fi
+
+if ((NODES > 1)); then
     echo "Generating nodes..."
     if [ -f "$TEMPLATE_FILE" ]; then
-        awk -v nodes="$NODES_PARAMS" '{gsub(/<NODES>/, nodes)}1' "$TEMPLATE_FILE" > "$OUTPUT_FILE"
+        TMP_FILE=$(mktemp)
+
+        sed "/<NODES>/{
+            r /dev/stdin
+            d
+        }" "$TEMPLATE_FILE" > "$TMP_FILE" <<< "$NODES_PARAMS"
+
+        mv "$TMP_FILE" "$OUTPUT_FILE"
         echo "Docker-compose file generated: $OUTPUT_FILE"
     else
         echo "Template file not found: $TEMPLATE_FILE"
